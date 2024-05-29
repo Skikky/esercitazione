@@ -4,6 +4,7 @@ import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
 import com.example.demo.repositories.PrenotazioneRepository;
+import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.PrenotazioneRequest;
 import com.example.demo.response.PrenotazioneResponse;
@@ -22,7 +23,7 @@ public class PrenotazioneService {
     @Autowired
     private UtenteRepository utenteRepository;
     @Autowired
-    private RistoranteService ristoranteService;
+    private RistoranteRepository ristoranteRepository;
 
     private PrenotazioneResponse mapToPrenotazioneResponse(Prenotazione prenotazione) {
         return PrenotazioneResponse.builder()
@@ -44,7 +45,7 @@ public class PrenotazioneService {
 
     public PrenotazioneResponse createPrenotazione(Long idUtente,PrenotazioneRequest prenotazioneRequest) {
         Utente utente = utenteRepository.getReferenceById(idUtente);
-        Ristorante ristorante = ristoranteService.getRistoranteById(prenotazioneRequest.getIdRistorante());
+        Ristorante ristorante = ristoranteRepository.getReferenceById(prenotazioneRequest.getIdRistorante());
 
         LocalDateTime prenotazioneTime = prenotazioneRequest.getDataPrenotazione();
         int postiDisponibili = ristorante.getPosti();
@@ -73,17 +74,23 @@ public class PrenotazioneService {
         return mapToPrenotazioneResponse(savedPrenotazione);
     }
 
-/*
-    public void chiudiConto(Long prenotazioneId) {
+    public PrenotazioneResponse chiudiConto(Long prenotazioneId) {
         Prenotazione prenotazione = getPrenotazioneById(prenotazioneId);
         if (prenotazione.isPagata()) {
             throw new IllegalStateException("La prenotazione è già stata pagata.");
         }
         prenotazione.setPagata(true);
-        prenotazioneRepository.delete(prenotazione);
+
+        Ristorante ristorante = prenotazione.getRistorante();
+        int postiLiberati = prenotazione.getNumeroPosti();
+        ristorante.setPosti(ristorante.getPosti() + postiLiberati);
+
+        ristoranteRepository.saveAndFlush(ristorante);
+        Prenotazione savedPrenotazione = prenotazioneRepository.saveAndFlush(prenotazione);
+
+        return mapToPrenotazioneResponse(savedPrenotazione);
     }
 
- */
 
     public Prenotazione getPrenotazioneById(Long id) {
         Optional<Prenotazione> optionalPrenotazione = prenotazioneRepository.findById(id);

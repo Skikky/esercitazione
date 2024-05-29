@@ -1,6 +1,5 @@
 package com.example.demo.services;
 
-import com.example.demo.entities.Comune;
 import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
@@ -11,7 +10,6 @@ import com.example.demo.response.PrenotazioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,14 +71,13 @@ public class UtenteService {
 
         prenotazioneService.deletePrenotazione(prenotazioneId);
     }
-/*
-    public void chiudiConto(Long userId, Long prenotazioneId) {
+
+    public PrenotazioneResponse chiudiConto(Long userId, Long prenotazioneId) {
         Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(prenotazioneId);
         if (!prenotazione.getUtente().getId().equals(userId)) {
             throw new IllegalArgumentException("L'utente non è autorizzato a chiudere il conto di questa prenotazione.");
         }
-        prenotazioneService.chiudiConto(prenotazioneId);
+        return prenotazioneService.chiudiConto(prenotazioneId);
     }
 
- */
 }
