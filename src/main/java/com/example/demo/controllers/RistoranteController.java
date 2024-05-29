@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.Ristorante;
+import com.example.demo.request.RistoranteRequest;
 import com.example.demo.services.RistoranteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +29,14 @@ public class RistoranteController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Ristorante> createRistorante(@RequestBody Ristorante ristorante) {
-        Ristorante newRistorante = ristoranteService.createRistorante(ristorante);
+    public ResponseEntity<Ristorante> createRistorante(@RequestBody RistoranteRequest ristoranteRequest) {
+        Ristorante newRistorante = ristoranteService.createRistorante(ristoranteRequest);
         return ResponseEntity.ok(newRistorante);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Ristorante> updateRistorante(@PathVariable Long id, @RequestBody Ristorante ristoranteDetails) {
-        Ristorante updatedRistorante = ristoranteService.update(id, ristoranteDetails);
+    public ResponseEntity<Ristorante> updateRistorante(@PathVariable Long id, @RequestBody RistoranteRequest ristoranteRequest) {
+        Ristorante updatedRistorante = ristoranteService.update(id, ristoranteRequest);
         return ResponseEntity.ok(updatedRistorante);
     }
 

@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.Pietanza;
+import com.example.demo.request.PietanzaRequest;
 import com.example.demo.services.PietanzaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +29,14 @@ public class PietanzaController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Pietanza> createPietanza(@RequestBody Pietanza pietanza) {
-        Pietanza newPietanza = pietanzaService.create(pietanza);
+    public ResponseEntity<Pietanza> createPietanza(@RequestBody PietanzaRequest pietanzaRequest) {
+        Pietanza newPietanza = pietanzaService.create(pietanzaRequest);
         return ResponseEntity.ok(newPietanza);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Pietanza> updatePietanza(@PathVariable Long id, @RequestBody Pietanza pietanzaDetails) {
-        Pietanza updatedPietanza = pietanzaService.update(id, pietanzaDetails);
+    public ResponseEntity<Pietanza> updatePietanza(@PathVariable Long id, @RequestBody PietanzaRequest pietanzaRequest) {
+        Pietanza updatedPietanza = pietanzaService.update(id, pietanzaRequest);
         return ResponseEntity.ok(updatedPietanza);
     }
 

@@ -28,12 +28,6 @@ public class PrenotazioneController {
         return ResponseEntity.ok(prenotazioni);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Prenotazione> createPrenotazione(@RequestBody Prenotazione prenotazione) {
-        Prenotazione newPrenotazione = prenotazioneService.createPrenotazione(prenotazione);
-        return ResponseEntity.ok(newPrenotazione);
-    }
-
     @PutMapping("/update/{id}")
     public ResponseEntity<Prenotazione> updatePrenotazione(@PathVariable Long id, @RequestBody Prenotazione prenotazioneDetails) {
         Prenotazione updatedPrenotazione = prenotazioneService.update(id, prenotazioneDetails);

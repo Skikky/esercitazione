@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.entities.Pietanza;
 import com.example.demo.repositories.PietanzaRepository;
+import com.example.demo.request.PietanzaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,16 +23,18 @@ public class PietanzaService {
         return pietanzaRepository.findAll();
     }
 
-    public Pietanza create(Pietanza pietanza) {
+    public Pietanza create(PietanzaRequest pietanzaRequest) {
+        Pietanza pietanza = Pietanza.builder()
+                .nome(pietanzaRequest.getNome())
+                .prezzo(pietanzaRequest.getPrezzo())
+                .build();
         return pietanzaRepository.saveAndFlush(pietanza);
     }
 
-    public Pietanza update(Long id, Pietanza newPietanza) {
+    public Pietanza update(Long id, PietanzaRequest pietanzaRequest) {
         Pietanza pietanza = getPietanzaById(id);
-        pietanza = Pietanza.builder()
-                .nome(newPietanza.getNome())
-                .prezzo(newPietanza.getPrezzo())
-                .build();
+        pietanza.setNome(pietanzaRequest.getNome());
+        pietanza.setPrezzo(pietanzaRequest.getPrezzo());
         return pietanzaRepository.saveAndFlush(pietanza);
     }
 

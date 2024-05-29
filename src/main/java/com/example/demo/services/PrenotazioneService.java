@@ -2,7 +2,9 @@ package com.example.demo.services;
 
 import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
+import com.example.demo.entities.Utente;
 import com.example.demo.repositories.PrenotazioneRepository;
+import com.example.demo.request.PrenotazioneRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,16 @@ import java.util.Optional;
 public class PrenotazioneService {
     @Autowired
     private PrenotazioneRepository prenotazioneRepository;
+    @Autowired
+    private UtenteService utenteService;
+    @Autowired
+    private RistoranteService ristoranteService;
 
-    public Prenotazione createPrenotazione(Prenotazione prenotazione) {
-        Ristorante ristorante = prenotazione.getRistorante();
-        LocalDateTime prenotazioneTime = prenotazione.getDataOra();
+    public Prenotazione createPrenotazione(PrenotazioneRequest prenotazioneRequest) {
+        Utente utente = utenteService.getUtenteById(prenotazioneRequest.getIdUtente());
+        Ristorante ristorante = ristoranteService.getRistoranteById(prenotazioneRequest.getIdRistorante());
+
+        LocalDateTime prenotazioneTime = prenotazioneRequest.getDataPrenotazione();
         int postiDisponibili = ristorante.getPosti();
         LocalDateTime chiusuraTime = LocalDateTime.of(prenotazioneTime.toLocalDate(), ristorante.getChiusura());
 
@@ -29,9 +37,16 @@ public class PrenotazioneService {
                 ristorante, prenotazioneTime.toLocalDate().atStartOfDay(), prenotazioneTime.toLocalDate().atTime(23, 59));
 
         int postiPrenotati = prenotazioni.stream().mapToInt(Prenotazione::getNumeroPosti).sum();
-        if (postiPrenotati + prenotazione.getNumeroPosti() > postiDisponibili) {
+        if (postiPrenotati + prenotazioneRequest.getNumeroPosti() > postiDisponibili) {
             throw new IllegalArgumentException("Posti non disponibili.");
         }
+
+        Prenotazione prenotazione = Prenotazione.builder()
+                .utente(utente)
+                .ristorante(ristorante)
+                .dataOra(prenotazioneRequest.getDataPrenotazione())
+                .numeroPosti(prenotazioneRequest.getNumeroPosti())
+                .build();
 
         return prenotazioneRepository.saveAndFlush(prenotazione);
     }

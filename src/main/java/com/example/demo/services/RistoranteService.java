@@ -2,14 +2,19 @@ package com.example.demo.services;
 
 import com.example.demo.entities.Comune;
 import com.example.demo.entities.Pietanza;
+import com.example.demo.entities.Proprietario;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.repositories.PietanzaRepository;
 import com.example.demo.repositories.RistoranteRepository;
+import com.example.demo.request.RistoranteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RistoranteService {
@@ -17,8 +22,27 @@ public class RistoranteService {
     private RistoranteRepository ristoranteRepository;
     @Autowired
     private PietanzaRepository pietanzaRepository;
+    @Autowired
+    private ComuneService comuneService;
+    @Autowired
+    private ProprietarioService proprietarioService;
 
-    public Ristorante createRistorante(Ristorante ristorante) {
+    public Ristorante createRistorante(RistoranteRequest ristoranteRequest) {
+        Comune comune = comuneService.getComuneById(ristoranteRequest.getIdComune());
+        Proprietario proprietario = proprietarioService.getProprietarioById(ristoranteRequest.getIdProprietario());
+        Set<Pietanza> pietanze = new HashSet<>(pietanzaRepository.findAllById(ristoranteRequest.getIdPietanze()));
+
+        Ristorante ristorante = Ristorante.builder()
+                .nome(ristoranteRequest.getNome())
+                .indirizzo(ristoranteRequest.getIndirizzo())
+                .comune(comune)
+                .proprietario(proprietario)
+                .posti(ristoranteRequest.getPosti())
+                .apertura(ristoranteRequest.getApertura())
+                .chiusura(ristoranteRequest.getChiusura())
+                .menu(pietanze)
+                .build();
+
         return ristoranteRepository.saveAndFlush(ristorante);
     }
 
@@ -37,18 +61,21 @@ public class RistoranteService {
         ristoranteRepository.deleteById(id);
     }
 
-    public Ristorante update(Long id, Ristorante newRistorante) {
+    public Ristorante update(Long id, RistoranteRequest ristoranteRequest) {
         Ristorante ristorante = getRistoranteById(id);
+        Comune comune = comuneService.getComuneById(ristoranteRequest.getIdComune());
+        Proprietario proprietario = proprietarioService.getProprietarioById(ristoranteRequest.getIdProprietario());
+        Set<Pietanza> pietanze = new HashSet<>(pietanzaRepository.findAllById(ristoranteRequest.getIdPietanze()));
         ristorante = Ristorante.builder()
-                .id(ristorante.getId())
-                .nome(newRistorante.getNome())
-                .indirizzo(newRistorante.getIndirizzo())
-                .comune(newRistorante.getComune())
-                .proprietario(newRistorante.getProprietario())
-                .posti(newRistorante.getPosti())
-                .apertura(newRistorante.getApertura())
-                .chiusura(newRistorante.getChiusura())
-                .menu(newRistorante.getMenu())
+                .id(id)
+                .nome(ristoranteRequest.getNome())
+                .indirizzo(ristoranteRequest.getIndirizzo())
+                .comune(comune)
+                .proprietario(proprietario)
+                .posti(ristoranteRequest.getPosti())
+                .apertura(ristoranteRequest.getApertura())
+                .chiusura(ristoranteRequest.getChiusura())
+                .menu(pietanze)
                 .build();
         return ristoranteRepository.saveAndFlush(ristorante);
     }

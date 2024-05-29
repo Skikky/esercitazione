@@ -1,13 +1,16 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Comune;
+import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
+import com.example.demo.request.PrenotazioneRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +23,8 @@ public class UtenteService {
     private RistoranteRepository ristoranteRepository;
     @Autowired
     private ComuneService comuneService;
+    @Autowired
+    private PrenotazioneService prenotazioneService;
 
     public Utente getUtenteById(Long id) {
         Optional<Utente> utente = utenteRepository.findById(id);
