@@ -26,4 +26,6 @@ public class Prenotazione {
     @ManyToOne(optional = false)
     @JoinColumn(name = "ristorante_id")
     private Ristorante ristorante;
+    @Column(nullable = false)
+    private boolean pagata = false;
 }

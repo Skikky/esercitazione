@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 
 import com.example.demo.entities.Prenotazione;
+import com.example.demo.request.PrenotazioneRequest;
 import com.example.demo.services.PrenotazioneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,13 @@ public class PrenotazioneController {
         List<Prenotazione> prenotazioni = prenotazioneService.getAllPrenotazioni();
         return ResponseEntity.ok(prenotazioni);
     }
-
+/*
     @PutMapping("/update/{id}")
-    public ResponseEntity<Prenotazione> updatePrenotazione(@PathVariable Long id, @RequestBody Prenotazione prenotazioneDetails) {
-        Prenotazione updatedPrenotazione = prenotazioneService.update(id, prenotazioneDetails);
+    public ResponseEntity<Prenotazione> updatePrenotazione(@PathVariable Long id, @RequestBody PrenotazioneRequest prenotazioneRequest) {
+        Prenotazione updatedPrenotazione = prenotazioneService.updatePrenotazione(id, prenotazioneRequest);
         return ResponseEntity.ok(updatedPrenotazione);
     }
+ */
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePrenotazione(@PathVariable Long id) {

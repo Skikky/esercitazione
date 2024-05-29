@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PrenotazioneRequest {
-    private Long idUtente;
     private Long idRistorante;
     private LocalDateTime dataPrenotazione;
     private int numeroPosti;

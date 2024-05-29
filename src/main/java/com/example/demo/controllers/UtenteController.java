@@ -1,7 +1,10 @@
 package com.example.demo.controllers;
 
+import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
+import com.example.demo.request.PrenotazioneRequest;
+import com.example.demo.response.PrenotazioneResponse;
 import com.example.demo.services.RistoranteService;
 import com.example.demo.services.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +55,24 @@ public class UtenteController {
         utenteService.deleteUtente(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/prenota")
+    public ResponseEntity<PrenotazioneResponse> prenota(@PathVariable Long id, @RequestBody PrenotazioneRequest prenotazioneRequest) {
+        PrenotazioneResponse newPrenotazione = utenteService.prenota(id, prenotazioneRequest);
+        return ResponseEntity.ok(newPrenotazione);
+    }
+
+    @DeleteMapping("/{userId}/prenotazioni/{prenotazioneId}")
+    public ResponseEntity<Void> deletePrenotazione(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
+        utenteService.deletePrenotazione(userId, prenotazioneId);
+        return ResponseEntity.noContent().build();
+    }
+/*
+    @PostMapping("/{userId}/chiudi_conto/{prenotazioneId}")
+    public ResponseEntity<Void> chiudiConto(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
+        utenteService.chiudiConto(userId, prenotazioneId);
+        return ResponseEntity.noContent().build();
+    }
+
+ */
 }

@@ -7,6 +7,7 @@ import com.example.demo.entities.Utente;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.PrenotazioneRequest;
+import com.example.demo.response.PrenotazioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,4 +59,28 @@ public class UtenteService {
     public void deleteUtente(Long id) {
         utenteRepository.deleteById(id);
     }
+
+    public PrenotazioneResponse prenota(Long id, PrenotazioneRequest prenotazioneRequest) {
+        return prenotazioneService.createPrenotazione(id, prenotazioneRequest);
+    }
+
+    public void deletePrenotazione(Long userId, Long prenotazioneId) {
+        Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(prenotazioneId);
+
+        if (!prenotazione.getUtente().getId().equals(userId)) {
+            throw new IllegalArgumentException("L'utente non è autorizzato a eliminare questa prenotazione.");
+        }
+
+        prenotazioneService.deletePrenotazione(prenotazioneId);
+    }
+/*
+    public void chiudiConto(Long userId, Long prenotazioneId) {
+        Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(prenotazioneId);
+        if (!prenotazione.getUtente().getId().equals(userId)) {
+            throw new IllegalArgumentException("L'utente non è autorizzato a chiudere il conto di questa prenotazione.");
+        }
+        prenotazioneService.chiudiConto(prenotazioneId);
+    }
+
+ */
 }

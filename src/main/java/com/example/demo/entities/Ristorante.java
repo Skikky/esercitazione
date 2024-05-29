@@ -32,7 +32,7 @@ public class Ristorante {
     private Proprietario proprietario;
 
     @Column(nullable = false)
-    private Integer posti;
+    private int posti;
     @Column(nullable = false)
     private LocalTime apertura;
     @Column(nullable = false)

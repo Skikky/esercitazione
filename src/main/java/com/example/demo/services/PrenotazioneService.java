@@ -4,7 +4,9 @@ import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
 import com.example.demo.repositories.PrenotazioneRepository;
+import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.PrenotazioneRequest;
+import com.example.demo.response.PrenotazioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +19,30 @@ public class PrenotazioneService {
     @Autowired
     private PrenotazioneRepository prenotazioneRepository;
     @Autowired
-    private UtenteService utenteService;
+    private UtenteRepository utenteRepository;
     @Autowired
     private RistoranteService ristoranteService;
 
-    public Prenotazione createPrenotazione(PrenotazioneRequest prenotazioneRequest) {
-        Utente utente = utenteService.getUtenteById(prenotazioneRequest.getIdUtente());
+    private PrenotazioneResponse mapToPrenotazioneResponse(Prenotazione prenotazione) {
+        return PrenotazioneResponse.builder()
+                .idPrenotazione(prenotazione.getId())
+                .idUtente(prenotazione.getUtente().getId())
+                .idRistorante(prenotazione.getRistorante().getId())
+                .dataOra(prenotazione.getDataOra())
+                .numeroPosti(prenotazione.getNumeroPosti())
+                .build();
+    }
+
+    private Prenotazione mapToPrenotazione(PrenotazioneResponse prenotazioneResponse) {
+        Prenotazione prenotazione = new Prenotazione();
+        prenotazione.setId(prenotazioneResponse.getIdPrenotazione());
+        prenotazione.setDataOra(prenotazioneResponse.getDataOra());
+        prenotazione.setNumeroPosti(prenotazioneResponse.getNumeroPosti());
+        return prenotazione;
+    }
+
+    public PrenotazioneResponse createPrenotazione(Long idUtente,PrenotazioneRequest prenotazioneRequest) {
+        Utente utente = utenteRepository.getReferenceById(idUtente);
         Ristorante ristorante = ristoranteService.getRistoranteById(prenotazioneRequest.getIdRistorante());
 
         LocalDateTime prenotazioneTime = prenotazioneRequest.getDataPrenotazione();
@@ -48,24 +68,25 @@ public class PrenotazioneService {
                 .numeroPosti(prenotazioneRequest.getNumeroPosti())
                 .build();
 
-        return prenotazioneRepository.saveAndFlush(prenotazione);
+        Prenotazione savedPrenotazione = prenotazioneRepository.saveAndFlush(prenotazione);
+        return mapToPrenotazioneResponse(savedPrenotazione);
     }
+
+/*
+    public void chiudiConto(Long prenotazioneId) {
+        Prenotazione prenotazione = getPrenotazioneById(prenotazioneId);
+        if (prenotazione.isPagata()) {
+            throw new IllegalStateException("La prenotazione è già stata pagata.");
+        }
+        prenotazione.setPagata(true);
+        prenotazioneRepository.delete(prenotazione);
+    }
+
+ */
 
     public Prenotazione getPrenotazioneById(Long id) {
         Optional<Prenotazione> optionalPrenotazione = prenotazioneRepository.findById(id);
         return optionalPrenotazione.orElseThrow(() -> new IllegalArgumentException("prenotazione non trovata con id: "+id));
-    }
-
-    public Prenotazione update(Long id, Prenotazione newPrenotazione) {
-        Prenotazione prenotazione = getPrenotazioneById(id);
-        prenotazione = Prenotazione.builder()
-                .id(prenotazione.getId())
-                .utente(newPrenotazione.getUtente())
-                .ristorante(newPrenotazione.getRistorante())
-                .dataOra(newPrenotazione.getDataOra())
-                .numeroPosti(newPrenotazione.getNumeroPosti())
-                .build();
-        return prenotazioneRepository.saveAndFlush(prenotazione);
     }
 
     public List<Prenotazione> getAllPrenotazioni() {

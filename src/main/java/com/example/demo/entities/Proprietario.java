@@ -1,5 +1,6 @@
 package com.example.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Proprietario extends Utente {
+    @JsonIgnore
     @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ristorante> ristoranti;
 }
