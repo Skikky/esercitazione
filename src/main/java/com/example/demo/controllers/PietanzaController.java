@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.entities.Pietanza;
 import com.example.demo.request.PietanzaRequest;
+import com.example.demo.response.PietanzaResponse;
 import com.example.demo.services.PietanzaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,26 +18,26 @@ public class PietanzaController {
     private PietanzaService pietanzaService;
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Pietanza> getPietanzaById(@PathVariable Long id) {
-        Pietanza pietanza = pietanzaService.getPietanzaById(id);
+    public ResponseEntity<PietanzaResponse> getPietanzaById(@PathVariable Long id) {
+        PietanzaResponse pietanza = pietanzaService.getPietanzaResponseById(id);
         return ResponseEntity.ok(pietanza);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Pietanza>> getAllPietanze() {
-        List<Pietanza> pietanze = pietanzaService.getAllPietanze();
+    public ResponseEntity<List<PietanzaResponse>> getAllPietanze() {
+        List<PietanzaResponse> pietanze = pietanzaService.getAllPietanzeResponse();
         return ResponseEntity.ok(pietanze);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Pietanza> createPietanza(@RequestBody PietanzaRequest pietanzaRequest) {
-        Pietanza newPietanza = pietanzaService.create(pietanzaRequest);
+    public ResponseEntity<PietanzaResponse> createPietanza(@RequestBody PietanzaRequest pietanzaRequest) {
+        PietanzaResponse newPietanza = pietanzaService.create(pietanzaRequest);
         return ResponseEntity.ok(newPietanza);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Pietanza> updatePietanza(@PathVariable Long id, @RequestBody PietanzaRequest pietanzaRequest) {
-        Pietanza updatedPietanza = pietanzaService.update(id, pietanzaRequest);
+    public ResponseEntity<PietanzaResponse> updatePietanza(@PathVariable Long id, @RequestBody PietanzaRequest pietanzaRequest) {
+        PietanzaResponse updatedPietanza = pietanzaService.update(id, pietanzaRequest);
         return ResponseEntity.ok(updatedPietanza);
     }
 

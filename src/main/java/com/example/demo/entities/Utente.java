@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Utente {
+public class Utente{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -7,6 +7,7 @@ import com.example.demo.entities.Ristorante;
 import com.example.demo.repositories.PietanzaRepository;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.request.RistoranteRequest;
+import com.example.demo.response.RistoranteResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,30 @@ public class RistoranteService {
     @Autowired
     private ProprietarioService proprietarioService;
 
-    public Ristorante createRistorante(RistoranteRequest ristoranteRequest) {
+    public Ristorante getRistoranteById(Long id) {
+        Optional<Ristorante> optionalRistorante = ristoranteRepository.findById(id);
+        return optionalRistorante.orElseThrow(() -> new IllegalArgumentException("ristorante non trovato con id: "+id));
+    }
+
+    public void deleteRistorante(Long id) {
+        ristoranteRepository.deleteById(id);
+    }
+
+    private RistoranteResponse mapToRistoranteResponse(Ristorante ristorante) {
+        return RistoranteResponse.builder()
+                .idRistorante(ristorante.getId())
+                .nome(ristorante.getNome())
+                .indirizzo(ristorante.getIndirizzo())
+                .idComune(ristorante.getComune().getId())
+                .idProprietario(ristorante.getProprietario().getId())
+                .posti(ristorante.getPosti())
+                .apertura(ristorante.getApertura())
+                .chiusura(ristorante.getChiusura())
+                .idPietanze(ristorante.getMenu().stream().map(Pietanza::getId).collect(Collectors.toSet()))
+                .build();
+    }
+
+    public RistoranteResponse createRistorante(RistoranteRequest ristoranteRequest) {
         Comune comune = comuneService.getComuneById(ristoranteRequest.getIdComune());
         Proprietario proprietario = proprietarioService.getProprietarioById(ristoranteRequest.getIdProprietario());
         Set<Pietanza> pietanze = new HashSet<>(pietanzaRepository.findAllById(ristoranteRequest.getIdPietanze()));
@@ -43,29 +67,28 @@ public class RistoranteService {
                 .menu(pietanze)
                 .build();
 
-        return ristoranteRepository.saveAndFlush(ristorante);
+        Ristorante savedRistorante = ristoranteRepository.saveAndFlush(ristorante);
+        return mapToRistoranteResponse(savedRistorante);
     }
 
-    public Ristorante getRistoranteById(Long id) {
+    public RistoranteResponse getRistoranteResponseById(Long id) {
         Optional<Ristorante> optionalRistorante = ristoranteRepository.findById(id);
-        return optionalRistorante.orElseThrow(() -> new IllegalArgumentException("ristorante non trovato con id: "+id));
+        Ristorante ristorante = optionalRistorante.orElseThrow(() -> new IllegalArgumentException("ristorante non trovato con id: " + id));
+        return mapToRistoranteResponse(ristorante);
     }
 
-
-
-    public List<Ristorante> getAllRistoranti() {
-        return ristoranteRepository.findAll();
+    public List<RistoranteResponse> getAllRistorantiResponse() {
+        return ristoranteRepository.findAll().stream()
+                .map(this::mapToRistoranteResponse)
+                .collect(Collectors.toList());
     }
 
-    public void deleteRistorante(Long id) {
-        ristoranteRepository.deleteById(id);
-    }
-
-    public Ristorante update(Long id, RistoranteRequest ristoranteRequest) {
+    public RistoranteResponse update(Long id, RistoranteRequest ristoranteRequest) {
         Ristorante ristorante = getRistoranteById(id);
         Comune comune = comuneService.getComuneById(ristoranteRequest.getIdComune());
         Proprietario proprietario = proprietarioService.getProprietarioById(ristoranteRequest.getIdProprietario());
         Set<Pietanza> pietanze = new HashSet<>(pietanzaRepository.findAllById(ristoranteRequest.getIdPietanze()));
+
         ristorante = Ristorante.builder()
                 .id(id)
                 .nome(ristoranteRequest.getNome())
@@ -77,10 +100,12 @@ public class RistoranteService {
                 .chiusura(ristoranteRequest.getChiusura())
                 .menu(pietanze)
                 .build();
-        return ristoranteRepository.saveAndFlush(ristorante);
+
+        Ristorante updatedRistorante = ristoranteRepository.saveAndFlush(ristorante);
+        return mapToRistoranteResponse(updatedRistorante);
     }
 
-    public Ristorante aggiungiPietanzaAlMenu(Long ristoranteId, Long pietanzaId) {
+    public RistoranteResponse aggiungiPietanzaAlMenu(Long ristoranteId, Long pietanzaId) {
         Ristorante ristorante = getRistoranteById(ristoranteId);
         Pietanza pietanza = pietanzaRepository.findById(pietanzaId)
                 .orElseThrow(() -> new IllegalArgumentException("Pietanza non trovata con id: " + pietanzaId));
@@ -92,10 +117,11 @@ public class RistoranteService {
         ristorante.getMenu().add(pietanza);
         pietanza.getRistoranti().add(ristorante);
         pietanzaRepository.saveAndFlush(pietanza);
-        return ristoranteRepository.saveAndFlush(ristorante);
+        Ristorante updatedRistorante = ristoranteRepository.saveAndFlush(ristorante);
+        return mapToRistoranteResponse(updatedRistorante);
     }
 
-    public Ristorante rimuoviPietanzaDalMenu(Long ristoranteId, Long pietanzaId) {
+    public RistoranteResponse rimuoviPietanzaDalMenu(Long ristoranteId, Long pietanzaId) {
         Ristorante ristorante = getRistoranteById(ristoranteId);
         Pietanza pietanza = pietanzaRepository.findById(pietanzaId)
                 .orElseThrow(() -> new IllegalArgumentException("Pietanza non trovata con id: " + pietanzaId));
@@ -107,6 +133,7 @@ public class RistoranteService {
         ristorante.getMenu().remove(pietanza);
         pietanza.getRistoranti().remove(ristorante);
         pietanzaRepository.saveAndFlush(pietanza);
-        return ristoranteRepository.saveAndFlush(ristorante);
+        Ristorante updatedRistorante = ristoranteRepository.saveAndFlush(ristorante);
+        return mapToRistoranteResponse(updatedRistorante);
     }
 }

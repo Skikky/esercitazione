@@ -16,7 +16,9 @@ public class Prenotazione {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private LocalDateTime dataOra;
+    @Column(nullable = false)
     private int numeroPosti;
 
     @ManyToOne(optional = false)

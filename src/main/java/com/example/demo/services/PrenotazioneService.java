@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PrenotazioneService {
@@ -91,6 +92,18 @@ public class PrenotazioneService {
 
     public List<Prenotazione> getAllPrenotazioni() {
         return prenotazioneRepository.findAll();
+    }
+
+    public PrenotazioneResponse getPrenotazioneResponseById(Long id) {
+        Optional<Prenotazione> optionalPrenotazione = prenotazioneRepository.findById(id);
+        Prenotazione prenotazione = optionalPrenotazione.orElseThrow(() -> new IllegalArgumentException("prenotazione non trovata con id: " + id));
+        return mapToPrenotazioneResponse(prenotazione);
+    }
+
+    public List<PrenotazioneResponse> getAllPrenotazioniResponse() {
+        return prenotazioneRepository.findAll().stream()
+                .map(this::mapToPrenotazioneResponse)
+                .collect(Collectors.toList());
     }
 
     public void deletePrenotazione(Long id) {
