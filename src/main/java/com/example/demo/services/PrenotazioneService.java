@@ -48,7 +48,7 @@ public class PrenotazioneService {
         Ristorante ristorante = ristoranteRepository.getReferenceById(prenotazioneRequest.getIdRistorante());
 
         LocalDateTime prenotazioneTime = prenotazioneRequest.getDataPrenotazione();
-        int postiDisponibili = ristorante.getPosti();
+        int postiDisponibili = ristorante.getPostiLiberi();
         LocalDateTime chiusuraTime = LocalDateTime.of(prenotazioneTime.toLocalDate(), ristorante.getChiusura());
 
         if (prenotazioneTime.plusHours(2).isAfter(chiusuraTime)) {
@@ -62,7 +62,7 @@ public class PrenotazioneService {
         if (postiPrenotati + prenotazioneRequest.getNumeroPosti() > postiDisponibili) {
             throw new IllegalArgumentException("Posti non disponibili.");
         }
-
+        ristorante.setPostiLiberi(postiDisponibili-postiPrenotati);
         Prenotazione prenotazione = Prenotazione.builder()
                 .utente(utente)
                 .ristorante(ristorante)
@@ -74,7 +74,7 @@ public class PrenotazioneService {
         return mapToPrenotazioneResponse(savedPrenotazione);
     }
 
-    public PrenotazioneResponse chiudiConto(Long prenotazioneId) {
+    public void chiudiConto(Long prenotazioneId) {
         Prenotazione prenotazione = getPrenotazioneById(prenotazioneId);
         if (prenotazione.isPagata()) {
             throw new IllegalStateException("La prenotazione è già stata pagata.");
@@ -83,12 +83,10 @@ public class PrenotazioneService {
 
         Ristorante ristorante = prenotazione.getRistorante();
         int postiLiberati = prenotazione.getNumeroPosti();
-        ristorante.setPosti(ristorante.getPosti() + postiLiberati);
+        ristorante.setPostiLiberi(ristorante.getPostiLiberi() + postiLiberati);
 
         ristoranteRepository.saveAndFlush(ristorante);
-        Prenotazione savedPrenotazione = prenotazioneRepository.saveAndFlush(prenotazione);
-
-        return mapToPrenotazioneResponse(savedPrenotazione);
+        prenotazioneRepository.deleteById(prenotazioneId);
     }
 
 

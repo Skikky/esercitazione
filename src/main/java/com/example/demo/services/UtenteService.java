@@ -72,12 +72,12 @@ public class UtenteService {
         prenotazioneService.deletePrenotazione(prenotazioneId);
     }
 
-    public PrenotazioneResponse chiudiConto(Long userId, Long prenotazioneId) {
+    public void chiudiConto(Long userId, Long prenotazioneId) {
         Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(prenotazioneId);
         if (!prenotazione.getUtente().getId().equals(userId)) {
             throw new IllegalArgumentException("L'utente non è autorizzato a chiudere il conto di questa prenotazione.");
         }
-        return prenotazioneService.chiudiConto(prenotazioneId);
+        prenotazioneService.chiudiConto(prenotazioneId);
     }
 
 }

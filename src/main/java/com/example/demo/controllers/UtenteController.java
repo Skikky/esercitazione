@@ -69,9 +69,9 @@ public class UtenteController {
     }
 
     @PostMapping("/{userId}/chiudi_conto/{prenotazioneId}")
-    public ResponseEntity<PrenotazioneResponse> chiudiConto(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
-        PrenotazioneResponse prenotazioneResponse = utenteService.chiudiConto(userId, prenotazioneId);
-        return ResponseEntity.ok(prenotazioneResponse);
+    public ResponseEntity<Void> chiudiConto(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
+        utenteService.chiudiConto(userId, prenotazioneId);
+        return ResponseEntity.noContent().build();
     }
 
 }
