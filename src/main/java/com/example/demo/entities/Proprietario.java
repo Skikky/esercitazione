@@ -1,10 +1,7 @@
 package com.example.demo.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -19,4 +16,11 @@ public class Proprietario extends Utente {
     @JsonIgnore
     @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ristorante> ristoranti;
+
+    @PreRemove
+    private void preRemove() {
+        for (Ristorante ristorante : ristoranti) {
+            ristorante.setProprietario(null);
+        }
+    }
 }

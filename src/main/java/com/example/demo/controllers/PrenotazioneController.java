@@ -7,6 +7,7 @@ import com.example.demo.response.PrenotazioneResponse;
 import com.example.demo.services.PrenotazioneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,14 @@ public class PrenotazioneController {
     @Autowired
     private PrenotazioneService prenotazioneService;
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @GetMapping("/get/{id}")
     public ResponseEntity<PrenotazioneResponse> getPrenotazioneById(@PathVariable Long id) {
         PrenotazioneResponse prenotazione = prenotazioneService.getPrenotazioneResponseById(id);
         return ResponseEntity.ok(prenotazione);
     }
 
+    @Secured({"ADMIN", "RISTORATORE"})
     @GetMapping("/all")
     public ResponseEntity<List<PrenotazioneResponse>> getAllPrenotazioni() {
         List<PrenotazioneResponse> prenotazioni = prenotazioneService.getAllPrenotazioniResponse();
@@ -37,6 +40,7 @@ public class PrenotazioneController {
     }
  */
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePrenotazione(@PathVariable Long id) {
         prenotazioneService.deletePrenotazione(id);

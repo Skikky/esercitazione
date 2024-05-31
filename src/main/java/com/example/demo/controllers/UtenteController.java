@@ -1,14 +1,14 @@
 package com.example.demo.controllers;
 
-import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.request.PrenotazioneRequest;
 import com.example.demo.response.PrenotazioneResponse;
-import com.example.demo.services.RistoranteService;
 import com.example.demo.services.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,26 +20,23 @@ public class UtenteController {
     @Autowired
     private UtenteService utenteService;
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @GetMapping("/get/{id}")
-    public ResponseEntity<Utente> getUtenteById(@PathVariable Long id) {
+    public ResponseEntity<Utente> getUtenteById(@PathVariable Long id) throws EntityNotFoundException {
         Utente utente = utenteService.getUtenteById(id);
         return ResponseEntity.ok(utente);
     }
 
+    @Secured("ADMIN")
     @GetMapping("/all")
     public ResponseEntity<List<Utente>> getAllUtenti() {
         List<Utente> utenti = utenteService.getAllUtenti();
         return ResponseEntity.ok(utenti);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Utente> createUtente(@RequestBody Utente utente) {
-        Utente newUtente = utenteService.create(utente);
-        return ResponseEntity.ok(newUtente);
-    }
-
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @PutMapping("/update/{id}")
-    public ResponseEntity<Utente> updateUtente(@PathVariable Long id, @RequestBody Utente utenteDetails) {
+    public ResponseEntity<Utente> updateUtente(@PathVariable Long id, @RequestBody Utente utenteDetails) throws EntityNotFoundException {
         Utente updatedUtente = utenteService.update(id, utenteDetails);
         return ResponseEntity.ok(updatedUtente);
     }
@@ -50,24 +47,28 @@ public class UtenteController {
         return ResponseEntity.ok(ristoranti);
     }
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteUtente(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUtente(@PathVariable Long id) throws EntityNotFoundException {
         utenteService.deleteUtente(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @PostMapping("/{id}/prenota")
     public ResponseEntity<PrenotazioneResponse> prenota(@PathVariable Long id, @RequestBody PrenotazioneRequest prenotazioneRequest) {
         PrenotazioneResponse newPrenotazione = utenteService.prenota(id, prenotazioneRequest);
         return ResponseEntity.ok(newPrenotazione);
     }
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @DeleteMapping("/{userId}/prenotazioni/{prenotazioneId}")
     public ResponseEntity<Void> deletePrenotazione(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
         utenteService.deletePrenotazione(userId, prenotazioneId);
         return ResponseEntity.noContent().build();
     }
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @PostMapping("/{userId}/chiudi_conto/{prenotazioneId}")
     public ResponseEntity<Void> chiudiConto(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
         utenteService.chiudiConto(userId, prenotazioneId);

@@ -4,23 +4,27 @@ import com.example.demo.entities.Comune;
 import com.example.demo.services.ComuneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Secured({"ADMIN"})
 @RequestMapping("/comune")
 public class ComuneController {
 
     @Autowired
     private ComuneService comuneService;
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @GetMapping("/get/{id}")
     public ResponseEntity<Comune> getComuneById(@PathVariable Long id) {
         Comune comune = comuneService.getComuneById(id);
         return ResponseEntity.ok(comune);
     }
 
+    @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @GetMapping("/all")
     public ResponseEntity<List<Comune>> getAllComuni() {
         List<Comune> comuni = comuneService.getAllComuni();
@@ -39,7 +43,7 @@ public class ComuneController {
         return ResponseEntity.ok(updatedComune);
     }
 
-        @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteComune(@PathVariable Long id) {
         comuneService.deleteComune(id);
         return ResponseEntity.noContent().build();

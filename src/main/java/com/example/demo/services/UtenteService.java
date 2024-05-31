@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.PrenotazioneRequest;
@@ -25,20 +26,16 @@ public class UtenteService {
     @Autowired
     private PrenotazioneService prenotazioneService;
 
-    public Utente getUtenteById(Long id) {
+    public Utente getUtenteById(Long id) throws EntityNotFoundException {
         Optional<Utente> utente = utenteRepository.findById(id);
-        return utente.orElseThrow(() -> new IllegalArgumentException("Utente non trovato con id: " + id));
+        return utente.orElseThrow(() -> new EntityNotFoundException(id,"Utente :"));
     }
 
     public List<Utente> getAllUtenti() {
         return utenteRepository.findAll();
     }
 
-    public Utente create(Utente utente) {
-        return utenteRepository.saveAndFlush(utente);
-    }
-
-    public Utente update(Long id, Utente newUtente) {
+    public Utente update(Long id, Utente newUtente) throws EntityNotFoundException {
         Utente utente = getUtenteById(id);
         utente = Utente.builder()
                 .id(utente.getId())
@@ -54,7 +51,8 @@ public class UtenteService {
         return ristoranteRepository.findByComune(idComune);
     }
 
-    public void deleteUtente(Long id) {
+    public void deleteUtente(Long id) throws EntityNotFoundException {
+        getUtenteById(id);
         utenteRepository.deleteById(id);
     }
 

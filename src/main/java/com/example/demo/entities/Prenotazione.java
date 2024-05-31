@@ -21,7 +21,7 @@ public class Prenotazione {
     @Column(nullable = false)
     private int numeroPosti;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "utente_id")
     private Utente utente;
 

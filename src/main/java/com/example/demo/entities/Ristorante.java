@@ -27,7 +27,7 @@ public class Ristorante {
     @JoinColumn(name = "comune_id", nullable = false)
     private Comune comune;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proprietario_id", nullable = false)
     private Proprietario proprietario;
 
