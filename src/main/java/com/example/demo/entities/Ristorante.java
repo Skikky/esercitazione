@@ -34,8 +34,6 @@ public class Ristorante {
     @Column(nullable = false)
     private int posti;
     @Column(nullable = false)
-    private int postiLiberi = posti;
-    @Column(nullable = false)
     private LocalTime apertura;
     @Column(nullable = false)
     private LocalTime chiusura;
