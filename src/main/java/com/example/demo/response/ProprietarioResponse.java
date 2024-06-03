@@ -1,4 +1,4 @@
-package com.example.demo.request;
+package com.example.demo.response;
 
 
 import lombok.*;
@@ -9,7 +9,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProprietarioRequest {
+@Builder
+public class ProprietarioResponse {
     private String nome;
     private String cognome;
     private String email;

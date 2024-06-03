@@ -68,6 +68,7 @@ public class RistoranteService {
                 .build();
 
         Ristorante savedRistorante = ristoranteRepository.saveAndFlush(ristorante);
+        proprietarioService.addRistoranteToProprietario(proprietario, savedRistorante);
         return mapToRistoranteResponse(savedRistorante);
     }
 

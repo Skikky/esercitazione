@@ -1,7 +1,8 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.Proprietario;
-import com.example.demo.request.ProprietarioRequest;
+import com.example.demo.request.RegistrationRequest;
+import com.example.demo.response.ProprietarioResponse;
 import com.example.demo.services.ProprietarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,29 +19,29 @@ public class ProprietarioController {
     private ProprietarioService proprietarioService;
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Proprietario> getProprietarioById(@PathVariable Long id) {
-        Proprietario proprietario = proprietarioService.getProprietarioById(id);
+    public ResponseEntity<ProprietarioResponse> getProprietarioById(@PathVariable Long id) {
+        ProprietarioResponse proprietario = proprietarioService.getProprietarioResponseById(id);
         return ResponseEntity.ok(proprietario);
     }
 
     @Secured({"ADMIN", "RISTORATORE"})
     @GetMapping("/all")
-    public ResponseEntity<List<Proprietario>> getAllProprietari() {
-        List<Proprietario> proprietari = proprietarioService.getAllProprietari();
+    public ResponseEntity<List<ProprietarioResponse>> getAllProprietari() {
+        List<ProprietarioResponse> proprietari = proprietarioService.getAllProprietariResponse();
         return ResponseEntity.ok(proprietari);
     }
 
     @Secured({"ADMIN", "RISTORATORE"})
     @PostMapping("/create")
-    public ResponseEntity<Proprietario> createProprietario(@RequestBody ProprietarioRequest proprietarioRequest) {
-        Proprietario newProprietario = proprietarioService.create(proprietarioRequest);
+    public ResponseEntity<ProprietarioResponse> createProprietario(@RequestBody RegistrationRequest registrationRequest) {
+        ProprietarioResponse newProprietario = proprietarioService.create(registrationRequest);
         return ResponseEntity.ok(newProprietario);
     }
 
     @Secured({"ADMIN", "RISTORATORE"})
     @PutMapping("/update/{id}")
-    public ResponseEntity<Proprietario> updateProprietario(@PathVariable Long id, @RequestBody ProprietarioRequest proprietarioRequest) {
-        Proprietario updatedProprietario = proprietarioService.update(id, proprietarioRequest);
+    public ResponseEntity<ProprietarioResponse> updateProprietario(@PathVariable Long id, @RequestBody RegistrationRequest registrationRequest) {
+        ProprietarioResponse updatedProprietario = proprietarioService.update(id, registrationRequest);
         return ResponseEntity.ok(updatedProprietario);
     }
 

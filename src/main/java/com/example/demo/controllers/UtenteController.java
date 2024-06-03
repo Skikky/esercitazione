@@ -4,6 +4,7 @@ import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
 import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.request.PrenotazioneRequest;
+import com.example.demo.request.RegistrationRequest;
 import com.example.demo.response.PrenotazioneResponse;
 import com.example.demo.services.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ public class UtenteController {
 
     @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @PutMapping("/update/{id}")
-    public ResponseEntity<Utente> updateUtente(@PathVariable Long id, @RequestBody Utente utenteDetails) throws EntityNotFoundException {
-        Utente updatedUtente = utenteService.update(id, utenteDetails);
+    public ResponseEntity<Utente> updateUtente(@PathVariable Long id, @RequestBody RegistrationRequest registrationRequest) throws EntityNotFoundException {
+        Utente updatedUtente = utenteService.update(id, registrationRequest);
         return ResponseEntity.ok(updatedUtente);
     }
 

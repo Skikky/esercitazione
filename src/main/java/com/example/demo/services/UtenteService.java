@@ -7,6 +7,7 @@ import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.PrenotazioneRequest;
+import com.example.demo.request.RegistrationRequest;
 import com.example.demo.response.PrenotazioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,14 +36,14 @@ public class UtenteService {
         return utenteRepository.findAll();
     }
 
-    public Utente update(Long id, Utente newUtente) throws EntityNotFoundException {
+    public Utente update(Long id, RegistrationRequest registrationRequest) throws EntityNotFoundException {
         Utente utente = getUtenteById(id);
         utente = Utente.builder()
                 .id(utente.getId())
-                .nome(newUtente.getNome())
-                .cognome(newUtente.getCognome())
-                .email(newUtente.getEmail())
-                .password(newUtente.getPassword())
+                .nome(registrationRequest.getNome())
+                .cognome(registrationRequest.getCognome())
+                .email(registrationRequest.getEmail())
+                .password(registrationRequest.getPassword())
                 .build();
         return utenteRepository.saveAndFlush(utente);
     }
