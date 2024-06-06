@@ -65,7 +65,7 @@ public class UtenteController {
 
     @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @DeleteMapping("/{userId}/prenotazioni/{prenotazioneId}")
-    public ResponseEntity<Void> deletePrenotazione(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
+    public ResponseEntity<Void> deletePrenotazione(@PathVariable Long userId, @PathVariable Long prenotazioneId) throws EntityNotFoundException {
         utenteService.deletePrenotazione(userId, prenotazioneId);
         return ResponseEntity.noContent().build();
     }

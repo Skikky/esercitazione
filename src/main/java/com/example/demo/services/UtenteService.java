@@ -80,7 +80,7 @@ public class UtenteService {
         return prenotazioneService.createPrenotazione(id, prenotazioneRequest);
     }
 
-    public void deletePrenotazione(Long userId, Long prenotazioneId) {
+    public void deletePrenotazione(Long userId, Long prenotazioneId) throws EntityNotFoundException {
         Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(prenotazioneId);
 
         if (!prenotazione.getUtente().getId().equals(userId)) {

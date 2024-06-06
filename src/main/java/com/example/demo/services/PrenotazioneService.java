@@ -1,9 +1,9 @@
 package com.example.demo.services;
 
-import com.example.demo.entities.Conto;
 import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.repositories.PrenotazioneRepository;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
@@ -73,6 +73,7 @@ public class PrenotazioneService {
                 .numeroPosti(prenotazioneRequest.getNumeroPosti())
                 .build();
 
+        ristoranteRepository.saveAndFlush(ristorante);
         Prenotazione savedPrenotazione = prenotazioneRepository.saveAndFlush(prenotazione);
 
         contoService.createConto(savedPrenotazione);
@@ -80,14 +81,13 @@ public class PrenotazioneService {
         return mapToPrenotazioneResponse(savedPrenotazione);
     }
 
-    public Prenotazione getPrenotazioneById(Long id) {
+    public Prenotazione getPrenotazioneById(Long id) throws EntityNotFoundException {
         Optional<Prenotazione> optionalPrenotazione = prenotazioneRepository.findById(id);
-        return optionalPrenotazione.orElseThrow(() -> new IllegalArgumentException("prenotazione non trovata con id: "+id));
+        return optionalPrenotazione.orElseThrow(() -> new EntityNotFoundException(id,"Prenotazione"));
     }
 
-    public PrenotazioneResponse getPrenotazioneResponseById(Long id) {
-        Optional<Prenotazione> optionalPrenotazione = prenotazioneRepository.findById(id);
-        Prenotazione prenotazione = optionalPrenotazione.orElseThrow(() -> new IllegalArgumentException("prenotazione non trovata con id: " + id));
+    public PrenotazioneResponse getPrenotazioneResponseById(Long id) throws EntityNotFoundException {
+        Prenotazione prenotazione = getPrenotazioneById(id);
         return mapToPrenotazioneResponse(prenotazione);
     }
 
@@ -97,7 +97,7 @@ public class PrenotazioneService {
                 .collect(Collectors.toList());
     }
 
-    public void deletePrenotazione(Long id) {
+    public void deletePrenotazione(Long id) throws EntityNotFoundException {
         Prenotazione prenotazione = getPrenotazioneById(id);
         Ristorante ristorante = prenotazione.getRistorante();
         int postiLiberati = prenotazione.getNumeroPosti();

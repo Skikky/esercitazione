@@ -1,8 +1,6 @@
 package com.example.demo.controllers;
 
-
-import com.example.demo.entities.Prenotazione;
-import com.example.demo.request.PrenotazioneRequest;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.response.PrenotazioneResponse;
 import com.example.demo.services.PrenotazioneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public class PrenotazioneController {
 
     @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @GetMapping("/get/{id}")
-    public ResponseEntity<PrenotazioneResponse> getPrenotazioneById(@PathVariable Long id) {
+    public ResponseEntity<PrenotazioneResponse> getPrenotazioneById(@PathVariable Long id) throws EntityNotFoundException {
         PrenotazioneResponse prenotazione = prenotazioneService.getPrenotazioneResponseById(id);
         return ResponseEntity.ok(prenotazione);
     }
@@ -32,17 +30,10 @@ public class PrenotazioneController {
         List<PrenotazioneResponse> prenotazioni = prenotazioneService.getAllPrenotazioniResponse();
         return ResponseEntity.ok(prenotazioni);
     }
-/*
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Prenotazione> updatePrenotazione(@PathVariable Long id, @RequestBody PrenotazioneRequest prenotazioneRequest) {
-        Prenotazione updatedPrenotazione = prenotazioneService.updatePrenotazione(id, prenotazioneRequest);
-        return ResponseEntity.ok(updatedPrenotazione);
-    }
- */
 
     @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deletePrenotazione(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePrenotazione(@PathVariable Long id) throws EntityNotFoundException {
         prenotazioneService.deletePrenotazione(id);
         return ResponseEntity.noContent().build();
     }
