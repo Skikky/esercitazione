@@ -1,0 +1,3 @@
+Conto(id=3, prenotazione=null, totale=10.0, timestamp=2024-06-06T20:16:36.997533, isPagato=true)
+Conto(id=3, prenotazione=null, totale=10.0, timestamp=2024-06-06T20:16:36.997533, isPagato=true)
+Conto{id=4, prenotazioneId=4, utenteId=1, ristoranteId=1, totale=10.0, timestamp=2024-06-06T20:27:54.868638900}

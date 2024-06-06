@@ -1,12 +1,15 @@
 package com.example.demo.services;
 
+import com.example.demo.consumer.KafkaConsumer;
 import com.example.demo.entities.*;
 import com.example.demo.exceptions.EntityNotFoundException;
+import com.example.demo.producer.KafkaJsonProducer;
 import com.example.demo.repositories.ContoRepository;
 import com.example.demo.repositories.PrenotazioneRepository;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.response.ContoResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ContoService {
 
     @Autowired
@@ -26,6 +30,12 @@ public class ContoService {
     private UtenteRepository utenteRepository;
     @Autowired
     private RistoranteRepository ristoranteRepository;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private KafkaJsonProducer kafkaJsonProducer;
+    @Autowired
+    private KafkaConsumer kafkaConsumer;
 
 
     public Conto getContoById(Long id) throws EntityNotFoundException {
@@ -90,13 +100,16 @@ public class ContoService {
 
         conto.setIsPagato(true);
         conto.setTimestamp(LocalDateTime.now());
-        conto.setPrenotazione(null);
-        contoRepository.saveAndFlush(conto);
+
+        kafkaJsonProducer.sendMessage(conto);
+        kafkaConsumer.consumeJsonMessage(conto);
 
         ristorante.setPosti(ristorante.getPosti() + prenotazione.getNumeroPosti());
         ristoranteRepository.saveAndFlush(ristorante);
 
-        prenotazioneRepository.deleteById(prenotazione.getId());
+        conto.setPrenotazione(null);
+        prenotazioneRepository.delete(prenotazione);
+        contoRepository.delete(conto);
         prenotazioneRepository.flush();
     }
 

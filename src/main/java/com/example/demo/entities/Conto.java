@@ -27,4 +27,16 @@ public class Conto {
     private LocalDateTime timestamp;
     @Column (nullable = false)
     private Boolean isPagato;
+
+    @Override
+    public String toString() {
+        return "Conto{" +
+                "id=" + id +
+                ", prenotazioneId=" + (prenotazione != null ? prenotazione.getId() : "null") +
+                ", utenteId=" + (prenotazione != null ? prenotazione.getUtente().getId() : "null") +
+                ", ristoranteId=" + (prenotazione != null ? prenotazione.getRistorante().getId() : "null") +
+                ", totale=" + totale +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
