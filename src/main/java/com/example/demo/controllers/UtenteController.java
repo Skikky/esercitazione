@@ -6,6 +6,7 @@ import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.request.PrenotazioneRequest;
 import com.example.demo.request.RegistrationRequest;
 import com.example.demo.response.PrenotazioneResponse;
+import com.example.demo.response.RistoranteResponse;
 import com.example.demo.services.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,8 +44,8 @@ public class UtenteController {
     }
 
     @GetMapping("/cerca_ristoranti/{idComune}")
-    public ResponseEntity<List<Ristorante>> findRistorantiByComune(@PathVariable Long idComune) {
-        List<Ristorante> ristoranti = utenteService.findRistorantiByComune(idComune);
+    public ResponseEntity<List<RistoranteResponse>> findRistorantiByComune(@PathVariable Long idComune) {
+        List<RistoranteResponse> ristoranti = utenteService.findRistorantiByComune(idComune);
         return ResponseEntity.ok(ristoranti);
     }
 
@@ -57,7 +58,7 @@ public class UtenteController {
 
     @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
     @PostMapping("/{id}/prenota")
-    public ResponseEntity<PrenotazioneResponse> prenota(@PathVariable Long id, @RequestBody PrenotazioneRequest prenotazioneRequest) {
+    public ResponseEntity<PrenotazioneResponse> prenota(@PathVariable Long id, @RequestBody PrenotazioneRequest prenotazioneRequest) throws EntityNotFoundException {
         PrenotazioneResponse newPrenotazione = utenteService.prenota(id, prenotazioneRequest);
         return ResponseEntity.ok(newPrenotazione);
     }
@@ -70,9 +71,9 @@ public class UtenteController {
     }
 
     @Secured({"ADMIN", "RISTORATORE", "UTENTE"})
-    @PostMapping("/{userId}/chiudi_conto/{prenotazioneId}")
-    public ResponseEntity<Void> chiudiConto(@PathVariable Long userId, @PathVariable Long prenotazioneId) {
-        utenteService.chiudiConto(userId, prenotazioneId);
+    @PostMapping("/{userId}/chiudi_conto/{contoId}")
+    public ResponseEntity<Void> chiudiConto(@PathVariable Long userId, @PathVariable Long contoId) throws EntityNotFoundException {
+        utenteService.chiudiConto(userId, contoId);
         return ResponseEntity.noContent().build();
     }
 

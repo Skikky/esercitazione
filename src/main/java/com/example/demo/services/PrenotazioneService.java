@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.entities.Conto;
 import com.example.demo.entities.Prenotazione;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
@@ -24,6 +25,8 @@ public class PrenotazioneService {
     private UtenteRepository utenteRepository;
     @Autowired
     private RistoranteRepository ristoranteRepository;
+    @Autowired
+    private ContoService contoService;
 
     private PrenotazioneResponse mapToPrenotazioneResponse(Prenotazione prenotazione) {
         return PrenotazioneResponse.builder()
@@ -71,32 +74,15 @@ public class PrenotazioneService {
                 .build();
 
         Prenotazione savedPrenotazione = prenotazioneRepository.saveAndFlush(prenotazione);
+
+        contoService.createConto(savedPrenotazione);
+
         return mapToPrenotazioneResponse(savedPrenotazione);
     }
-
-    public void chiudiConto(Long prenotazioneId) {
-        Prenotazione prenotazione = getPrenotazioneById(prenotazioneId);
-        if (prenotazione.isPagata()) {
-            throw new IllegalStateException("La prenotazione è già stata pagata.");
-        }
-        prenotazione.setPagata(true);
-
-        Ristorante ristorante = prenotazione.getRistorante();
-        int postiLiberati = prenotazione.getNumeroPosti();
-        ristorante.setPosti(ristorante.getPosti() + postiLiberati);
-
-        ristoranteRepository.saveAndFlush(ristorante);
-        prenotazioneRepository.deleteById(prenotazioneId);
-    }
-
 
     public Prenotazione getPrenotazioneById(Long id) {
         Optional<Prenotazione> optionalPrenotazione = prenotazioneRepository.findById(id);
         return optionalPrenotazione.orElseThrow(() -> new IllegalArgumentException("prenotazione non trovata con id: "+id));
-    }
-
-    public List<Prenotazione> getAllPrenotazioni() {
-        return prenotazioneRepository.findAll();
     }
 
     public PrenotazioneResponse getPrenotazioneResponseById(Long id) {
@@ -118,5 +104,7 @@ public class PrenotazioneService {
         ristorante.setPosti(ristorante.getPosti() + postiLiberati);
         ristoranteRepository.saveAndFlush(ristorante);
         prenotazioneRepository.deleteById(id);
+
+        contoService.deleteContoByPrenotazione(prenotazione);
     }
 }

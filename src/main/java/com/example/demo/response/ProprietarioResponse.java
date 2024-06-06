@@ -16,4 +16,5 @@ public class ProprietarioResponse {
     private String email;
     private String password;
     private List<Long> idRistoranti;
+    private Double saldo;
 }

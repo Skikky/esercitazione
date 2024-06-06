@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,6 +54,7 @@ public class ProprietarioService {
         proprietario.setEmail(registrationRequest.getEmail());
         proprietario.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
         proprietario.setRole(Role.RISTORATORE);
+        proprietario.setSaldo(registrationRequest.getSaldo());
         var jwtToken = jwtService.generateToken(proprietario);
         proprietario.setRegistrationToken(jwtToken);
         Proprietario savedProprietario = proprietarioRepository.saveAndFlush(proprietario);
@@ -80,14 +82,19 @@ public class ProprietarioService {
     }
 
     private ProprietarioResponse mapToProprietarioResponse(Proprietario proprietario) {
+        List<Long> idRistoranti = Collections.emptyList();
+        if (proprietario.getRistoranti() != null && !proprietario.getRistoranti().isEmpty()) {
+            idRistoranti = proprietario.getRistoranti().stream()
+                    .map(Ristorante::getId)
+                    .toList();
+        }
         return ProprietarioResponse.builder()
                 .nome(proprietario.getNome())
                 .cognome(proprietario.getCognome())
                 .email(proprietario.getEmail())
                 .password(proprietario.getPassword())
-                .idRistoranti(proprietario.getRistoranti().stream()
-                        .map(Ristorante::getId)
-                        .collect(Collectors.toList()))
+                .idRistoranti(idRistoranti)
+                .saldo(proprietario.getSaldo())
                 .build();
     }
 }

@@ -48,6 +48,7 @@ public class AuthenticationService {
                 .email(registrationRequest.getEmail())
                 .role(Role.GUEST)
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                .saldo(registrationRequest.getSaldo())
                 .build();
         var jwtToken = jwtService.generateToken(user);
         user.setRegistrationToken(jwtToken);

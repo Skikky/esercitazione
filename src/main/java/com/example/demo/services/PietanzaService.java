@@ -9,8 +9,10 @@ import com.example.demo.response.PietanzaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,13 +28,18 @@ public class PietanzaService {
     }
 
     private PietanzaResponse mapToPietanzaResponse(Pietanza pietanza) {
+        Set<Long> idRistoranti = Collections.emptySet();
+        if (pietanza.getRistoranti() != null && !pietanza.getRistoranti().isEmpty()) {
+            idRistoranti = pietanza.getRistoranti().stream()
+                    .map(Ristorante::getId)
+                    .collect(Collectors.toSet());
+        }
+
         return PietanzaResponse.builder()
                 .id(pietanza.getId())
                 .nome(pietanza.getNome())
                 .prezzo(pietanza.getPrezzo())
-                .idRistoranti(pietanza.getRistoranti().stream()
-                        .map(Ristorante::getId)
-                        .collect(Collectors.toSet()))
+                .idRistoranti(idRistoranti)
                 .build();
     }
 

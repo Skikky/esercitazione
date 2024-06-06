@@ -1,19 +1,19 @@
 package com.example.demo.services;
 
-import com.example.demo.entities.Prenotazione;
-import com.example.demo.entities.Ristorante;
-import com.example.demo.entities.Utente;
+import com.example.demo.entities.*;
 import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.PrenotazioneRequest;
 import com.example.demo.request.RegistrationRequest;
 import com.example.demo.response.PrenotazioneResponse;
+import com.example.demo.response.RistoranteResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UtenteService {
@@ -26,6 +26,22 @@ public class UtenteService {
     private ComuneService comuneService;
     @Autowired
     private PrenotazioneService prenotazioneService;
+    @Autowired
+    private ContoService contoService;
+
+    private RistoranteResponse mapToRistoranteResponse(Ristorante ristorante) {
+        return RistoranteResponse.builder()
+                .idRistorante(ristorante.getId())
+                .nome(ristorante.getNome())
+                .indirizzo(ristorante.getIndirizzo())
+                .idComune(ristorante.getComune().getId())
+                .idProprietario(ristorante.getProprietario().getId())
+                .posti(ristorante.getPosti())
+                .apertura(ristorante.getApertura())
+                .chiusura(ristorante.getChiusura())
+                .idPietanze(ristorante.getMenu().stream().map(Pietanza::getId).collect(Collectors.toSet()))
+                .build();
+    }
 
     public Utente getUtenteById(Long id) throws EntityNotFoundException {
         Optional<Utente> utente = utenteRepository.findById(id);
@@ -44,12 +60,15 @@ public class UtenteService {
                 .cognome(registrationRequest.getCognome())
                 .email(registrationRequest.getEmail())
                 .password(registrationRequest.getPassword())
+                .saldo(registrationRequest.getSaldo())
                 .build();
         return utenteRepository.saveAndFlush(utente);
     }
 
-    public List<Ristorante> findRistorantiByComune(Long idComune) {
-        return ristoranteRepository.findByComune(idComune);
+    public List<RistoranteResponse> findRistorantiByComune(Long idComune) {
+        return ristoranteRepository.findByComuneId(idComune).stream()
+                .map(this::mapToRistoranteResponse)
+                .collect(Collectors.toList());
     }
 
     public void deleteUtente(Long id) throws EntityNotFoundException {
@@ -71,12 +90,14 @@ public class UtenteService {
         prenotazioneService.deletePrenotazione(prenotazioneId);
     }
 
-    public void chiudiConto(Long userId, Long prenotazioneId) {
-        Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(prenotazioneId);
-        if (!prenotazione.getUtente().getId().equals(userId)) {
-            throw new IllegalArgumentException("L'utente non è autorizzato a chiudere il conto di questa prenotazione.");
-        }
-        prenotazioneService.chiudiConto(prenotazioneId);
-    }
+    public void chiudiConto(Long utenteId, Long contoId) throws EntityNotFoundException {
+        Conto conto = contoService.getContoById(contoId);
+        getUtenteById(utenteId);
 
+        if (!conto.getPrenotazione().getUtente().getId().equals(utenteId)) {
+            throw new IllegalStateException("L'utente non è autorizzato a chiudere questo conto.");
+        } else {
+            contoService.chiudiConto(contoId);
+        }
+    }
 }

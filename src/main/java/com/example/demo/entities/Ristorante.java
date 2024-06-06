@@ -2,6 +2,7 @@ package com.example.demo.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -27,7 +28,7 @@ public class Ristorante {
     @JoinColumn(name = "comune_id", nullable = false)
     private Comune comune;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "proprietario_id", nullable = false)
     private Proprietario proprietario;
 
@@ -36,6 +37,7 @@ public class Ristorante {
     @Column(nullable = false)
     private LocalTime apertura;
     @Column(nullable = false)
+    @Check(constraints = "apertura !AFTER chiusura")
     private LocalTime chiusura;
 
     @ManyToMany(cascade = CascadeType.ALL)

@@ -34,6 +34,8 @@ public class Utente implements UserDetails {
     private Role role;
     @Column(nullable = false)
     private String registrationToken;
+    @Column(nullable = false)
+    private Double saldo;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

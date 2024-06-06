@@ -1,12 +1,10 @@
 package com.example.demo.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Check;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Entity
 @Table
@@ -15,17 +13,18 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Pietanza {
+public class Conto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Prenotazione prenotazione;
     @Column(nullable = false)
-    private String nome;
+    @Check(constraints = "totale > 0")
+    private Double totale;
     @Column(nullable = false)
-    @Check(constraints ="prezzo >0" )
-    private Double prezzo;
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "menu")
-    private Set<Ristorante> ristoranti = new HashSet<>();
+    private LocalDateTime timestamp;
+    @Column (nullable = false)
+    private Boolean isPagato;
 }

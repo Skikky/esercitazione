@@ -14,4 +14,5 @@ public class RegistrationRequest {
     private String cognome;
     private String email;
     private String password;
+    private Double saldo;
 }
