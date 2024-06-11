@@ -100,6 +100,8 @@ public class ContoService {
         ristorante.setPosti(ristorante.getPosti() + prenotazione.getNumeroPosti());
         ristoranteRepository.saveAndFlush(ristorante);
 
+        kafkaJsonProducer.sendMessage(conto);
+
         conto.setPrenotazione(null);
         contoRepository.saveAndFlush(conto);
         contoRepository.delete(conto);
