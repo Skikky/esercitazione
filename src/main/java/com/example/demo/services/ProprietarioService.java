@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.entities.Proprietario;
 import com.example.demo.entities.Ristorante;
 import com.example.demo.enums.Role;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.repositories.ProprietarioRepository;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.request.RegistrationRequest;
@@ -30,15 +31,14 @@ public class ProprietarioService {
     @Autowired
     private JwtService jwtService;
 
-    public Proprietario getProprietarioById(Long id) {
+    public Proprietario getProprietarioById(Long id) throws EntityNotFoundException {
         Optional<Proprietario> proprietario = proprietarioRepository.findById(id);
-        return proprietario.orElseThrow(() -> new IllegalArgumentException("Proprietario non trovato con id: " + id));
+        return proprietario.orElseThrow(() -> new EntityNotFoundException(id,"Proprietario"));
     }
 
-    public ProprietarioResponse getProprietarioResponseById(Long id) {
-        Optional<Proprietario> proprietario = proprietarioRepository.findById(id);
-        Proprietario foundProprietario = proprietario.orElseThrow(() -> new IllegalArgumentException("Proprietario non trovato con id: " + id));
-        return mapToProprietarioResponse(foundProprietario);
+    public ProprietarioResponse getProprietarioResponseById(Long id) throws EntityNotFoundException {
+        Proprietario proprietario = getProprietarioById(id);
+        return mapToProprietarioResponse(proprietario);
     }
 
     public List<ProprietarioResponse> getAllProprietariResponse() {
@@ -61,7 +61,7 @@ public class ProprietarioService {
         return mapToProprietarioResponse(savedProprietario);
     }
 
-    public ProprietarioResponse update(Long id, RegistrationRequest registrationRequest) {
+    public ProprietarioResponse update(Long id, RegistrationRequest registrationRequest) throws EntityNotFoundException {
         Proprietario proprietario = getProprietarioById(id);
         proprietario.setNome(registrationRequest.getNome());
         proprietario.setCognome(registrationRequest.getCognome());
@@ -77,7 +77,8 @@ public class ProprietarioService {
         proprietarioRepository.saveAndFlush(proprietario);
     }
 
-    public void deleteProprietario(Long id) {
+    public void deleteProprietario(Long id) throws EntityNotFoundException {
+        getProprietarioById(id);
         proprietarioRepository.deleteById(id);
     }
 

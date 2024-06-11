@@ -1,6 +1,5 @@
 package com.example.demo.controllers;
 
-import com.example.demo.entities.Ristorante;
 import com.example.demo.entities.Utente;
 import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.request.PrenotazioneRequest;

@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.Proprietario;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.request.RegistrationRequest;
 import com.example.demo.response.ProprietarioResponse;
 import com.example.demo.services.ProprietarioService;
@@ -19,7 +20,7 @@ public class ProprietarioController {
     private ProprietarioService proprietarioService;
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<ProprietarioResponse> getProprietarioById(@PathVariable Long id) {
+    public ResponseEntity<ProprietarioResponse> getProprietarioById(@PathVariable Long id) throws EntityNotFoundException {
         ProprietarioResponse proprietario = proprietarioService.getProprietarioResponseById(id);
         return ResponseEntity.ok(proprietario);
     }
@@ -40,14 +41,14 @@ public class ProprietarioController {
 
     @Secured({"ADMIN", "RISTORATORE"})
     @PutMapping("/update/{id}")
-    public ResponseEntity<ProprietarioResponse> updateProprietario(@PathVariable Long id, @RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<ProprietarioResponse> updateProprietario(@PathVariable Long id, @RequestBody RegistrationRequest registrationRequest) throws EntityNotFoundException {
         ProprietarioResponse updatedProprietario = proprietarioService.update(id, registrationRequest);
         return ResponseEntity.ok(updatedProprietario);
     }
 
     @Secured({"ADMIN", "RISTORATORE"})
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteProprietario(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProprietario(@PathVariable Long id) throws EntityNotFoundException {
         proprietarioService.deleteProprietario(id);
         return ResponseEntity.noContent().build();
     }

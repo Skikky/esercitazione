@@ -1,6 +1,6 @@
 package com.example.demo.controllers;
 
-import com.example.demo.entities.Ristorante;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.request.RistoranteRequest;
 import com.example.demo.response.RistoranteResponse;
 import com.example.demo.services.RistoranteService;
@@ -32,14 +32,14 @@ public class RistoranteController {
 
     @Secured({"ADMIN", "RISTORATORE"})
     @PostMapping("/create")
-    public ResponseEntity<RistoranteResponse> createRistorante(@RequestBody RistoranteRequest ristoranteRequest) {
+    public ResponseEntity<RistoranteResponse> createRistorante(@RequestBody RistoranteRequest ristoranteRequest) throws EntityNotFoundException {
         RistoranteResponse newRistorante = ristoranteService.createRistorante(ristoranteRequest);
         return ResponseEntity.ok(newRistorante);
     }
 
     @Secured({"ADMIN", "RISTORATORE"})
     @PutMapping("/update/{id}")
-    public ResponseEntity<RistoranteResponse> updateRistorante(@PathVariable Long id, @RequestBody RistoranteRequest ristoranteRequest) {
+    public ResponseEntity<RistoranteResponse> updateRistorante(@PathVariable Long id, @RequestBody RistoranteRequest ristoranteRequest) throws EntityNotFoundException {
         RistoranteResponse updatedRistorante = ristoranteService.update(id, ristoranteRequest);
         return ResponseEntity.ok(updatedRistorante);
     }

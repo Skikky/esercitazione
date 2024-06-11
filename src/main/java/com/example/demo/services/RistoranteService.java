@@ -4,6 +4,7 @@ import com.example.demo.entities.Comune;
 import com.example.demo.entities.Pietanza;
 import com.example.demo.entities.Proprietario;
 import com.example.demo.entities.Ristorante;
+import com.example.demo.exceptions.EntityNotFoundException;
 import com.example.demo.repositories.PietanzaRepository;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.request.RistoranteRequest;
@@ -51,7 +52,7 @@ public class RistoranteService {
                 .build();
     }
 
-    public RistoranteResponse createRistorante(RistoranteRequest ristoranteRequest) {
+    public RistoranteResponse createRistorante(RistoranteRequest ristoranteRequest) throws EntityNotFoundException {
         Comune comune = comuneService.getComuneById(ristoranteRequest.getIdComune());
         Proprietario proprietario = proprietarioService.getProprietarioById(ristoranteRequest.getIdProprietario());
         Set<Pietanza> pietanze = new HashSet<>(pietanzaRepository.findAllById(ristoranteRequest.getIdPietanze()));
@@ -84,7 +85,7 @@ public class RistoranteService {
                 .collect(Collectors.toList());
     }
 
-    public RistoranteResponse update(Long id, RistoranteRequest ristoranteRequest) {
+    public RistoranteResponse update(Long id, RistoranteRequest ristoranteRequest) throws EntityNotFoundException {
         Ristorante ristorante = getRistoranteById(id);
         Comune comune = comuneService.getComuneById(ristoranteRequest.getIdComune());
         Proprietario proprietario = proprietarioService.getProprietarioById(ristoranteRequest.getIdProprietario());

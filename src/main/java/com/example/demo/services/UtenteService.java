@@ -61,6 +61,7 @@ public class UtenteService {
                 .email(registrationRequest.getEmail())
                 .password(registrationRequest.getPassword())
                 .saldo(registrationRequest.getSaldo())
+                .registrationToken(utente.getRegistrationToken())
                 .build();
         return utenteRepository.saveAndFlush(utente);
     }
