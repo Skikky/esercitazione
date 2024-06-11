@@ -1,0 +1,1 @@
+KafkaContoDTO(idConto=1, idPrenotazione=1, idUtente=1, idRistorante=1, totale=10.0, isPagato=true, timestamp=2024-06-11T20:27:56.954687762)

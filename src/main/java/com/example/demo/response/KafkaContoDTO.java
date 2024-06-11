@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @ToString
 public class KafkaContoDTO {
     private Long idConto;
+    private Long idPrenotazione;
     private Long idUtente;
     private Long idRistorante;
     private Double totale;
     private Boolean isPagato;
     private LocalDateTime timestamp;
-    private Long prenotazioneId;
 }

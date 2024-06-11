@@ -102,10 +102,7 @@ public class ContoService {
 
         kafkaJsonProducer.sendMessage(conto);
 
-        conto.setPrenotazione(null);
         contoRepository.saveAndFlush(conto);
-        contoRepository.delete(conto);
-        contoRepository.flush();
     }
 
     public void deleteContoByPrenotazione(Prenotazione prenotazione) {
@@ -133,7 +130,7 @@ public class ContoService {
     private KafkaContoDTO mapToKafkaContoDTO(Conto conto) {
         return KafkaContoDTO.builder()
                 .idConto(conto.getId())
-                .prenotazioneId(conto.getPrenotazione() != null ? conto.getPrenotazione().getId() : null)
+                .idPrenotazione(conto.getPrenotazione() != null ? conto.getPrenotazione().getId() : null)
                 .idUtente(conto.getPrenotazione() != null && conto.getPrenotazione().getUtente() != null ? conto.getPrenotazione().getUtente().getId() : null)
                 .idRistorante(conto.getPrenotazione() != null && conto.getPrenotazione().getRistorante() != null ? conto.getPrenotazione().getRistorante().getId() : null)
                 .totale(conto.getTotale())
