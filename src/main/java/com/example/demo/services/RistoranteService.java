@@ -29,9 +29,9 @@ public class RistoranteService {
     @Autowired
     private ProprietarioService proprietarioService;
 
-    public Ristorante getRistoranteById(Long id) {
+    public Ristorante getRistoranteById(Long id) throws EntityNotFoundException {
         Optional<Ristorante> optionalRistorante = ristoranteRepository.findById(id);
-        return optionalRistorante.orElseThrow(() -> new IllegalArgumentException("ristorante non trovato con id: "+id));
+        return optionalRistorante.orElseThrow(() -> new EntityNotFoundException(id,"ristorante"));
     }
 
     public void deleteRistorante(Long id) {
@@ -107,7 +107,7 @@ public class RistoranteService {
         return mapToRistoranteResponse(updatedRistorante);
     }
 
-    public RistoranteResponse aggiungiPietanzaAlMenu(Long ristoranteId, Long pietanzaId) {
+    public RistoranteResponse aggiungiPietanzaAlMenu(Long ristoranteId, Long pietanzaId) throws EntityNotFoundException {
         Ristorante ristorante = getRistoranteById(ristoranteId);
         Pietanza pietanza = pietanzaRepository.findById(pietanzaId)
                 .orElseThrow(() -> new IllegalArgumentException("Pietanza non trovata con id: " + pietanzaId));
@@ -123,7 +123,7 @@ public class RistoranteService {
         return mapToRistoranteResponse(updatedRistorante);
     }
 
-    public RistoranteResponse rimuoviPietanzaDalMenu(Long ristoranteId, Long pietanzaId) {
+    public RistoranteResponse rimuoviPietanzaDalMenu(Long ristoranteId, Long pietanzaId) throws EntityNotFoundException {
         Ristorante ristorante = getRistoranteById(ristoranteId);
         Pietanza pietanza = pietanzaRepository.findById(pietanzaId)
                 .orElseThrow(() -> new IllegalArgumentException("Pietanza non trovata con id: " + pietanzaId));

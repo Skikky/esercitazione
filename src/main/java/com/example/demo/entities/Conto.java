@@ -18,7 +18,7 @@ public class Conto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Prenotazione prenotazione;
     @Column(nullable = false)
     @Check(constraints = "totale > 0")

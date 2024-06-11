@@ -77,7 +77,7 @@ public class UtenteService {
         utenteRepository.deleteById(id);
     }
 
-    public PrenotazioneResponse prenota(Long id, PrenotazioneRequest prenotazioneRequest) {
+    public PrenotazioneResponse prenota(Long id, PrenotazioneRequest prenotazioneRequest) throws EntityNotFoundException {
         return prenotazioneService.createPrenotazione(id, prenotazioneRequest);
     }
 

@@ -10,5 +10,4 @@ import java.util.List;
 
 @Repository
 public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long> {
-    List<Prenotazione> findByRistoranteAndDataOraBetween(Ristorante ristorante, LocalDateTime start, LocalDateTime end);
 }

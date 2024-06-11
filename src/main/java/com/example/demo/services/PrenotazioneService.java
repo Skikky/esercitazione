@@ -46,9 +46,13 @@ public class PrenotazioneService {
         return prenotazione;
     }
 
-    public PrenotazioneResponse createPrenotazione(Long idUtente,PrenotazioneRequest prenotazioneRequest) {
-        Utente utente = utenteRepository.getReferenceById(idUtente);
-        Ristorante ristorante = ristoranteRepository.getReferenceById(prenotazioneRequest.getIdRistorante());
+    public PrenotazioneResponse createPrenotazione(Long idUtente,PrenotazioneRequest prenotazioneRequest) throws EntityNotFoundException {
+        Utente utente = utenteRepository.findById(idUtente)
+                .orElseThrow(() -> new EntityNotFoundException(idUtente, "Utente"));
+
+        Ristorante ristorante = ristoranteRepository.findById(prenotazioneRequest.getIdRistorante())
+                .orElseThrow(() -> new EntityNotFoundException(prenotazioneRequest.getIdRistorante(), "Ristorante"));
+
 
         LocalDateTime prenotazioneTime = prenotazioneRequest.getDataPrenotazione();
         int postiDisponibili = ristorante.getPosti();
@@ -58,22 +62,19 @@ public class PrenotazioneService {
             throw new IllegalArgumentException("Prenotazioni non accettate entro 2 ore dalla chiusura.");
         }
 
-        List<Prenotazione> prenotazioni = prenotazioneRepository.findByRistoranteAndDataOraBetween(
-                ristorante, prenotazioneTime.toLocalDate().atStartOfDay(), prenotazioneTime.toLocalDate().atTime(23, 59));
-
-        int postiPrenotati = prenotazioni.stream().mapToInt(Prenotazione::getNumeroPosti).sum();
-        if (postiPrenotati + prenotazioneRequest.getNumeroPosti() > postiDisponibili) {
+        if (prenotazioneRequest.getNumeroPosti() > postiDisponibili) {
             throw new IllegalArgumentException("Posti non disponibili.");
         }
-        ristorante.setPosti(postiDisponibili-postiPrenotati);
+        ristorante.setPosti(postiDisponibili-prenotazioneRequest.getNumeroPosti());
+        Ristorante savedRistorante = ristoranteRepository.saveAndFlush(ristorante);
+
         Prenotazione prenotazione = Prenotazione.builder()
                 .utente(utente)
-                .ristorante(ristorante)
+                .ristorante(savedRistorante)
                 .dataOra(prenotazioneRequest.getDataPrenotazione())
                 .numeroPosti(prenotazioneRequest.getNumeroPosti())
                 .build();
 
-        ristoranteRepository.saveAndFlush(ristorante);
         Prenotazione savedPrenotazione = prenotazioneRepository.saveAndFlush(prenotazione);
 
         contoService.createConto(savedPrenotazione);

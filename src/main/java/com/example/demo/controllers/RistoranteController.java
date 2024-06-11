@@ -46,14 +46,14 @@ public class RistoranteController {
 
     @Secured({"RISTORATORE"})
     @PostMapping("/{ristoranteId}/aggiungi_pietanza/")
-    public ResponseEntity<RistoranteResponse> aggiungiPietanzaAlMenu(@PathVariable Long ristoranteId, @RequestParam Long pietanzaId) {
+    public ResponseEntity<RistoranteResponse> aggiungiPietanzaAlMenu(@PathVariable Long ristoranteId, @RequestParam Long pietanzaId) throws EntityNotFoundException {
         RistoranteResponse updatedRistorante = ristoranteService.aggiungiPietanzaAlMenu(ristoranteId, pietanzaId);
         return ResponseEntity.ok(updatedRistorante);
     }
 
     @Secured({"RISTORATORE"})
     @DeleteMapping("/{ristoranteId}/rimuovi_pietanza/")
-    public ResponseEntity<RistoranteResponse> rimuoviPietanzaDalMenu(@PathVariable Long ristoranteId, @RequestParam Long pietanzaId) {
+    public ResponseEntity<RistoranteResponse> rimuoviPietanzaDalMenu(@PathVariable Long ristoranteId, @RequestParam Long pietanzaId) throws EntityNotFoundException {
         RistoranteResponse updatedRistorante = ristoranteService.rimuoviPietanzaDalMenu(ristoranteId, pietanzaId);
         return ResponseEntity.ok(updatedRistorante);
     }
