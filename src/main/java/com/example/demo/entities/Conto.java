@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Conto {
 
     @Id
@@ -27,5 +28,4 @@ public class Conto {
     private LocalDateTime timestamp;
     @Column (nullable = false)
     private Boolean isPagato;
-
 }

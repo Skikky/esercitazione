@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.entities.*;
 import com.example.demo.exceptions.EntityNotFoundException;
+import com.example.demo.producer.KafkaJsonProducer;
 import com.example.demo.repositories.ContoRepository;
 import com.example.demo.repositories.PrenotazioneRepository;
 import com.example.demo.repositories.RistoranteRepository;
@@ -26,6 +27,8 @@ public class ContoService {
     private UtenteRepository utenteRepository;
     @Autowired
     private RistoranteRepository ristoranteRepository;
+    @Autowired
+    private KafkaJsonProducer kafkaJsonProducer;
 
     public Conto getContoById(Long id) throws EntityNotFoundException {
         return contoRepository.findById(id)
@@ -92,6 +95,8 @@ public class ContoService {
 
         ristorante.setPosti(ristorante.getPosti() + prenotazione.getNumeroPosti());
         ristoranteRepository.saveAndFlush(ristorante);
+
+        kafkaJsonProducer.sendMessage(conto);
 
         conto.setPrenotazione(null);
         contoRepository.saveAndFlush(conto);
