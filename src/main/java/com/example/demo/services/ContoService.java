@@ -2,11 +2,13 @@ package com.example.demo.services;
 
 import com.example.demo.entities.*;
 import com.example.demo.exceptions.EntityNotFoundException;
+import com.example.demo.producer.KafkaJsonProducer;
 import com.example.demo.repositories.ContoRepository;
 import com.example.demo.repositories.PrenotazioneRepository;
 import com.example.demo.repositories.RistoranteRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.response.ContoResponse;
+import com.example.demo.response.KafkaContoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ public class ContoService {
     private UtenteRepository utenteRepository;
     @Autowired
     private RistoranteRepository ristoranteRepository;
+    @Autowired
+    private KafkaJsonProducer kafkaJsonProducer;
 
     public Conto getContoById(Long id) throws EntityNotFoundException {
         return contoRepository.findById(id)
@@ -90,6 +94,9 @@ public class ContoService {
         conto.setIsPagato(true);
         conto.setTimestamp(LocalDateTime.now());
 
+        KafkaContoDTO contoDTO = mapToKafkaContoDTO(conto);
+        kafkaJsonProducer.sendMessage(contoDTO);
+
         ristorante.setPosti(ristorante.getPosti() + prenotazione.getNumeroPosti());
         ristoranteRepository.saveAndFlush(ristorante);
 
@@ -115,6 +122,18 @@ public class ContoService {
         return ContoResponse.builder()
                 .id(conto.getId())
                 .prenotazioneId(prenotazioneId)
+                .totale(conto.getTotale())
+                .timestamp(conto.getTimestamp())
+                .isPagato(conto.getIsPagato())
+                .build();
+    }
+
+    private KafkaContoDTO mapToKafkaContoDTO(Conto conto) {
+        return KafkaContoDTO.builder()
+                .idConto(conto.getId())
+                .prenotazioneId(conto.getPrenotazione() != null ? conto.getPrenotazione().getId() : null)
+                .idUtente(conto.getPrenotazione() != null && conto.getPrenotazione().getUtente() != null ? conto.getPrenotazione().getUtente().getId() : null)
+                .idRistorante(conto.getPrenotazione() != null && conto.getPrenotazione().getRistorante() != null ? conto.getPrenotazione().getRistorante().getId() : null)
                 .totale(conto.getTotale())
                 .timestamp(conto.getTimestamp())
                 .isPagato(conto.getIsPagato())
