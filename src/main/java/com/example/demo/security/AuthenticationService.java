@@ -4,11 +4,13 @@ package com.example.demo.security;
 import com.example.demo.entities.TokenBlackList;
 import com.example.demo.entities.Utente;
 import com.example.demo.enums.Role;
+import com.example.demo.exceptions.InvalidRoleException;
 import com.example.demo.exceptions.UserNotConfirmedException;
 import com.example.demo.repositories.ComuneRepository;
 import com.example.demo.repositories.UtenteRepository;
 import com.example.demo.request.AuthenticationRequest;
 import com.example.demo.request.RegistrationRequest;
+import com.example.demo.request.UserDTO;
 import com.example.demo.response.AuthenticationResponse;
 import com.example.demo.services.EmailService;
 import com.example.demo.services.TokenBlackListService;
@@ -21,6 +23,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.EnumSet;
 
 @Service
 public class AuthenticationService {
@@ -40,7 +44,11 @@ public class AuthenticationService {
     private EmailService emailService;
 
     @Transactional
-    public AuthenticationResponse register(RegistrationRequest registrationRequest) {
+    public AuthenticationResponse register(RegistrationRequest registrationRequest) throws InvalidRoleException {
+
+        if (registrationRequest.getDesiredRole() != Role.RISTORATORE && registrationRequest.getDesiredRole() != Role.UTENTE) {
+            throw new InvalidRoleException();
+        }
 
         var user = Utente.builder()
                 .nome(registrationRequest.getNome())
@@ -54,13 +62,19 @@ public class AuthenticationService {
         user.setRegistrationToken(jwtToken);
         utenteRepository.saveAndFlush(user);
 
-        sendConfirmationEmail(user);
+        UserDTO userDTO = UserDTO.builder()
+                .id(user.getId())
+                .email(registrationRequest.getEmail())
+                .desiredRole(registrationRequest.getDesiredRole())
+                .registrationToken(user.getRegistrationToken())
+                .build();
+        sendConfirmationEmail(userDTO);
 
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
-    private void sendConfirmationEmail(Utente utente) {
-        String url = "http://localhost:8080/auth/confirm?id=" + utente.getId() + "&token=" + utente.getRegistrationToken();
+    private void sendConfirmationEmail(UserDTO utente) {
+        String url = "http://localhost:8080/auth/confirm?id=" + utente.getId() + "&token=" + utente.getRegistrationToken() + "&role=" + utente.getDesiredRole();
         String text = "Clicca per confermare la registrazione: " + url;
         emailService.sendEmail(utente.getEmail(), "Conferma", text);
     }
@@ -104,10 +118,10 @@ public class AuthenticationService {
         return null;
     }
 
-    public boolean confirmRegistration (Long id, String token) {
+    public boolean confirmRegistration (Long id, String token, Role role) {
         Utente utente = utenteRepository.getReferenceById(id);
         if (utente.getRegistrationToken().equals(token)) {
-            utente.setRole(Role.UTENTE);
+            utente.setRole(role);
             utenteRepository.saveAndFlush(utente);
             return true;
         }

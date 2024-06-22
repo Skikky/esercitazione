@@ -1,5 +1,6 @@
 package com.example.demo.response;
 
+import com.example.demo.enums.Role;
 import lombok.*;
 
 @Getter
